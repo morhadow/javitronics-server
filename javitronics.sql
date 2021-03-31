@@ -14,15 +14,15 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema mydb
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
-USE `mydb` ;
+CREATE SCHEMA IF NOT EXISTS `javitronics` DEFAULT CHARACTER SET utf8 ;
+USE `javitronics` ;
 
 -- -----------------------------------------------------
 -- Table `mydb`.`tipousuario`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`tipousuario` ;
+DROP TABLE IF EXISTS `javitronics`.`tipousuario` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`tipousuario` (
+CREATE TABLE IF NOT EXISTS `javitronics`.`tipousuario` (
   `id` INT NOT NULL,
   `nombre` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
@@ -32,9 +32,9 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`usuario`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`usuario` ;
+DROP TABLE IF EXISTS `javitronics`.`usuario` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`usuario` (
+CREATE TABLE IF NOT EXISTS `javitronics`.`usuario` (
   `id` INT NOT NULL,
   `nombre` VARCHAR(45) NULL,
   `apellidos` VARCHAR(45) NULL,
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`usuario` (
   INDEX `fk_Usuario_TipoUsuario1_idx` (`id_tipousuario` ASC) VISIBLE,
   CONSTRAINT `fk_Usuario_TipoUsuario1`
     FOREIGN KEY (`id_tipousuario`)
-    REFERENCES `mydb`.`tipousuario` (`id`)
+    REFERENCES `javitronics`.`tipousuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -57,9 +57,9 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`tipoproducto`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`tipoproducto` ;
+DROP TABLE IF EXISTS `javitronics`.`tipoproducto` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`tipoproducto` (
+CREATE TABLE IF NOT EXISTS `javitronics`.`tipoproducto` (
   `id` INT NOT NULL,
   `codigo` VARCHAR(45) NULL,
   `nombre` VARCHAR(45) NULL,
@@ -70,9 +70,9 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`producto`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`producto` ;
+DROP TABLE IF EXISTS `javitronics`.`producto` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`producto` (
+CREATE TABLE IF NOT EXISTS `javitronics`.`producto` (
   `id` INT NOT NULL,
   `nombre` VARCHAR(45) NULL,
   `codigo` VARCHAR(45) NULL,
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`producto` (
   INDEX `fk_Producto_Tipoproducto_idx` (`id_tipoproducto` ASC) VISIBLE,
   CONSTRAINT `fk_Producto_Tipoproducto`
     FOREIGN KEY (`id_tipoproducto`)
-    REFERENCES `mydb`.`tipoproducto` (`id`)
+    REFERENCES `javitronics`.`tipoproducto` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -92,9 +92,9 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`factura`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`factura` ;
+DROP TABLE IF EXISTS `javitronics`.`factura` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`factura` (
+CREATE TABLE IF NOT EXISTS `javitronics`.`factura` (
   `id` INT NOT NULL,
   `codigo` VARCHAR(45) NULL,
   `fecha` DATE NULL,
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`factura` (
   INDEX `fk_Factura_Usuario1_idx` (`id_usuario` ASC) VISIBLE,
   CONSTRAINT `fk_Factura_Usuario1`
     FOREIGN KEY (`id_usuario`)
-    REFERENCES `mydb`.`usuario` (`id`)
+    REFERENCES `javitronics`.`usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -112,9 +112,9 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`compra`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`compra` ;
+DROP TABLE IF EXISTS `javitronics`.`compra` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`compra` (
+CREATE TABLE IF NOT EXISTS `javitronics`.`compra` (
   `id` INT NOT NULL,
   `id_usuario` INT NOT NULL,
   `id_producto` INT NOT NULL,
@@ -125,12 +125,12 @@ CREATE TABLE IF NOT EXISTS `mydb`.`compra` (
   INDEX `fk_Compra_Factura1_idx` (`id_factura` ASC) VISIBLE,
   CONSTRAINT `fk_Compra_Producto1`
     FOREIGN KEY (`id_producto`)
-    REFERENCES `mydb`.`producto` (`id`)
+    REFERENCES `javitronics`.`producto` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Compra_Factura1`
     FOREIGN KEY (`id_factura`)
-    REFERENCES `mydb`.`factura` (`id`)
+    REFERENCES `javitronics`.`factura` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -139,9 +139,9 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`carrito`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`carrito` ;
+DROP TABLE IF EXISTS `javitronics`.`carrito` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`carrito` (
+CREATE TABLE IF NOT EXISTS `javitronics`.`carrito` (
   `id` INT NOT NULL,
   `id_producto` INT NOT NULL,
   `id_usuario` INT NOT NULL,
@@ -150,12 +150,12 @@ CREATE TABLE IF NOT EXISTS `mydb`.`carrito` (
   INDEX `fk_Carrito_Usuario1_idx` (`id_usuario` ASC) VISIBLE,
   CONSTRAINT `fk_Carrito_Producto1`
     FOREIGN KEY (`id_producto`)
-    REFERENCES `mydb`.`producto` (`id`)
+    REFERENCES `javitronics`.`producto` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Carrito_Usuario1`
     FOREIGN KEY (`id_usuario`)
-    REFERENCES `mydb`.`usuario` (`id`)
+    REFERENCES `javitronics`.`usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -164,9 +164,9 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`pedido`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`pedido` ;
+DROP TABLE IF EXISTS `javitronics`.`pedido` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`pedido` (
+CREATE TABLE IF NOT EXISTS `javitronics`.`pedido` (
   `id` INT NOT NULL,
   `codigo` VARCHAR(45) NULL,
   `cantidad` INT NULL,
@@ -178,9 +178,9 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`proveedor`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`proveedor` ;
+DROP TABLE IF EXISTS `javitronics`.`proveedor` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`proveedor` (
+CREATE TABLE IF NOT EXISTS `javitronics`.`proveedor` (
   `id` INT NOT NULL,
   `nombre` VARCHAR(45) NULL,
   `apellidos` VARCHAR(45) NULL,
@@ -194,9 +194,9 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`pedido_producto`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`pedido_producto` ;
+DROP TABLE IF EXISTS `javitronics`.`pedido_producto` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`pedido_producto` (
+CREATE TABLE IF NOT EXISTS `javitronics`.`pedido_producto` (
   `id_pedido` INT NOT NULL,
   `id_producto` INT NOT NULL,
   PRIMARY KEY (`id_pedido`, `id_producto`),
@@ -204,12 +204,12 @@ CREATE TABLE IF NOT EXISTS `mydb`.`pedido_producto` (
   INDEX `fk_Pedido_has_Producto_Pedido1_idx` (`id_pedido` ASC) VISIBLE,
   CONSTRAINT `fk_Pedido_has_Producto_Pedido1`
     FOREIGN KEY (`id_pedido`)
-    REFERENCES `mydb`.`pedido` (`id`)
+    REFERENCES `javitronics`.`pedido` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Pedido_has_Producto_Producto1`
     FOREIGN KEY (`id_producto`)
-    REFERENCES `mydb`.`producto` (`id`)
+    REFERENCES `javitronics`.`producto` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -218,9 +218,9 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`pedido_proveedor`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`pedido_proveedor` ;
+DROP TABLE IF EXISTS `javitronics`.`pedido_proveedor` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`pedido_proveedor` (
+CREATE TABLE IF NOT EXISTS `javitronics`.`pedido_proveedor` (
   `id_pedido` INT NOT NULL,
   `id_proveedor` INT NOT NULL,
   PRIMARY KEY (`id_pedido`, `id_proveedor`),
@@ -228,12 +228,12 @@ CREATE TABLE IF NOT EXISTS `mydb`.`pedido_proveedor` (
   INDEX `fk_Pedido_has_Proveedor_Pedido1_idx` (`id_pedido` ASC) VISIBLE,
   CONSTRAINT `fk_Pedido_has_Proveedor_Pedido1`
     FOREIGN KEY (`id_pedido`)
-    REFERENCES `mydb`.`pedido` (`id`)
+    REFERENCES `javitronics`.`pedido` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Pedido_has_Proveedor_Proveedor1`
     FOREIGN KEY (`id_proveedor`)
-    REFERENCES `mydb`.`proveedor` (`id`)
+    REFERENCES `javitronics`.`proveedor` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;

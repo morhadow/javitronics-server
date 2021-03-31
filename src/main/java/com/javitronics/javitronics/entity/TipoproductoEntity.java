@@ -60,9 +60,9 @@ public class TipoproductoEntity implements Serializable {
         this.nombre = nombre;
     }
 
-    public int getProducto() {
-        return productos.size;
-    }
+    ///public int getProducto() {
+    ///    return productos.size;
+    ///}
 
     
     
