@@ -1,0 +1,197 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.javitronics.javitronics.controller;
+
+import com.javitronics.javitronics.entity.UsuarioEntity;
+import com.javitronics.javitronics.repository.CarritoRepository;
+import com.javitronics.javitronics.repository.ProductoRepository;
+import com.javitronics.javitronics.repository.UsuarioRepository;
+import javax.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ *
+ * @author JAVIER
+ */
+@RestController
+@RequestMapping("/carrito")
+public class CarritoController {
+
+    @Autowired
+    HttpSession oHttpSession;
+
+    @Autowired
+    CarritoRepository oCarritoRepository;
+
+    @Autowired
+    ProductoRepository oProductoRepository;
+
+    
+
+    @Autowired
+    UsuarioRepository oUsuarioRepository;
+
+    //ADD añadir un producto al carrito con una determinada cantidad -> params: producto, cantidad (POST)
+    //REDUCE quitar un producto del carrito en una determinada cantidad -> params: producto, cantidad (DELETE)
+    //REMOVE quitar un producto totalmente del carrito -> params: producto (DELETE)
+    //CLEAR vaciar el carrito completamente (DELETE)
+    //BUY comprar los productos en el carrito (PUT)
+    //
+    //PAGE (GET)
+    //GET (GET)
+    @PostMapping("/{id_producto}/{cantidad}")
+    public ResponseEntity<?> add(@PathVariable(value = "id_producto") Long id_producto, @PathVariable(value = "cantidad") int cantidad) {
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            try {
+                return new ResponseEntity<>(oCarritoService.insert(oUsuarioEntity, id_producto, cantidad), HttpStatus.OK);
+            } catch (Exception ex) {
+                return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+            }
+        }
+    }
+
+    @DeleteMapping("/{id_carrito}/{cantidad}")
+    public ResponseEntity<?> reduce(@PathVariable(value = "id_carrito") Long id_carrito, @PathVariable(value = "cantidad") int cantidad) {
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            try {
+                return new ResponseEntity<>(oCarritoService.reduce(oUsuarioEntity, id_carrito, cantidad), HttpStatus.OK);
+            } catch (Exception ex) {
+                return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+            }
+        }
+    }
+
+    @DeleteMapping("/{id_carrito}")
+    public ResponseEntity<?> delete(@PathVariable(value = "id_carrito") Long id_carrito) {
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            try {
+                oCarritoService.remove(oUsuarioEntity, id_carrito);
+                return new ResponseEntity<>(null, HttpStatus.OK);
+            } catch (Exception ex) {
+                return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_MODIFIED);
+            }
+        }
+    }
+
+    @DeleteMapping("/")
+    public ResponseEntity<?> empty() {
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            try {
+                oCarritoService.clear(oUsuarioEntity);
+                return new ResponseEntity<>(null, HttpStatus.OK);
+            } catch (Exception ex) {
+                return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_MODIFIED);
+            }
+        }
+    }
+
+    @PutMapping("/")
+    public ResponseEntity<?> buy() {
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            try {
+                oCarritoService.purchase(oUsuarioEntity);
+                return new ResponseEntity<>(null, HttpStatus.OK);
+            } catch (Exception ex) {
+                return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_MODIFIED);
+            }
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> get(@PathVariable(value = "id") Long id) {
+
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else { //si hay sesion
+            if (oUsuarioEntity.getTipousuario().getId() == 1) {
+                if (oCarritoRepository.existsById(id)) {
+                    return new ResponseEntity<CarritoEntity>(oCarritoRepository.getOne(id), HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+                }
+            } else { //es cliente
+                //return new ResponseEntity<CarritoEntity>(oCarritoRepository.findByIdAndUsuario(id, oUsuarioEntity), HttpStatus.OK);
+                CarritoEntity oCarritoEntity = oCarritoRepository.getOne(id);
+                if (oCarritoEntity != null) {
+                    if (oCarritoEntity.getUsuario().getId().equals(oUsuarioEntity.getId())) {
+                        return new ResponseEntity<CarritoEntity>(oCarritoEntity, HttpStatus.OK);
+                    } else {
+                        return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+                    }
+                } else {
+                    return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+                }
+
+            }
+        }
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<?> count() {
+
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+        CarritoEntity oCarritoEntity = new CarritoEntity();
+
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            if (oUsuarioEntity.getTipousuario().getId() == 1) {
+                return new ResponseEntity<Long>(oCarritoRepository.count(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
+        }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> all() {
+
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+        CarritoEntity oCarritoEntity = new CarritoEntity();
+
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            if (oUsuarioEntity.getTipousuario().getId() == 1) {
+                if (oCarritoRepository.count() <= 1000) {
+                    return new ResponseEntity<List<CarritoEntity>>(oCarritoRepository.findAll(), HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(null, HttpStatus.PAYLOAD_TOO_LARGE);
+                }
+            } else {
+                if (oCarritoEntity.getUsuario().getId().equals(oUsuarioEntity.getId())) {
+                    return new ResponseEntity<List<CarritoEntity>>(oCarritoRepository.findAll(), HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+                }
+            }
+        }
+    }
+
+}

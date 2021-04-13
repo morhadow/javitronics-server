@@ -4,8 +4,8 @@
  * and open the template in the editor.
  */
 package com.javitronics.javitronics.entity;
-
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -18,40 +18,37 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
 /**
  *
  * @author JAVIER
  */
-@Entity
-@Table(name = "producto")
-public class ProductoEntity implements Serializable {
-    
+   @Entity
+@Table(name = "pedido")
+public class PedidoEntity implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id") 
     private Long id;
-    private String nombre;
     private String codigo;
-    private Integer existencias;
-    private Double precio;
-   
-    @ManyToOne(fetch=FetchType.EAGER, cascade={CascadeType.REFRESH})
-    @JoinColumn(name="id_tipoproducto")
-    private TipoproductoEntity tipoproducto;
+    private Integer cantidad;
+    private Date fecha;
+    
+    
+    @ManyToMany(mappedBy = "pedido", fetch = FetchType.LAZY)
+    private Set<ProductoEntity> producto = new HashSet<>();
     
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinTable(name = "pedido_producto",
+    @JoinTable(name = "pedido_proveedor",
             joinColumns = {
                     @JoinColumn(name = "id_pedido", referencedColumnName = "id",
                             nullable = false, updatable = false)},
             inverseJoinColumns = {
-                    @JoinColumn(name = "id_producto", referencedColumnName = "id",
+                    @JoinColumn(name = "id_proveedor", referencedColumnName = "id",
                             nullable = false, updatable = false)})
-    private Set<PedidoEntity> pedido = new HashSet<>();
+    private Set<ProveedorEntity> proveedor = new HashSet<>();
+    
 
     public Long getId() {
         return id;
@@ -59,14 +56,6 @@ public class ProductoEntity implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
     }
 
     public String getCodigo() {
@@ -77,33 +66,20 @@ public class ProductoEntity implements Serializable {
         this.codigo = codigo;
     }
 
-    public Integer getExistencias() {
-        return existencias;
+    public Integer getCantidad() {
+        return cantidad;
     }
 
-    public void setExistencias(Integer existencias) {
-        this.existencias = existencias;
+    public void setCantidad(Integer cantidad) {
+        this.cantidad = cantidad;
     }
 
-    public Double getPrecio() {
-        return precio;
+    public Date getFecha() {
+        return fecha;
     }
 
-    public void setPrecio(Double precio) {
-        this.precio = precio;
-    }
-    
-    @Override
-    public String toString() {
-        return "ProductoEntity [id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", existencias=" + existencias + ", precio=" + precio  + ", id_tipoproducto=" + tipoproducto.getId() + "]";
-    }
-
-    public TipoproductoEntity getTipoproducto() {
-        return tipoproducto;
-    }
-
-    public void setTipoproducto(TipoproductoEntity tipoproducto) {
-        this.tipoproducto = tipoproducto;
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
     }
     
     
