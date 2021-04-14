@@ -49,7 +49,8 @@ public class PedidoEntity implements Serializable{
                             nullable = false, updatable = false)})
     private Set<ProveedorEntity> proveedor = new HashSet<>();
     
-
+public PedidoEntity() {
+    }
     public Long getId() {
         return id;
     }

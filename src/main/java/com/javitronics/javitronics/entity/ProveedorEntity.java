@@ -36,6 +36,10 @@ private Long id;
     @ManyToMany(mappedBy = "proveedor", fetch = FetchType.LAZY)
     private Set<PedidoEntity> pedido = new HashSet<>();
 
+    
+    public ProveedorEntity() {
+    }
+    
     public Long getId() {
         return id;
     }

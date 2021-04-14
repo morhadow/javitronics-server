@@ -5,8 +5,11 @@
  */
 package com.javitronics.javitronics.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,6 +22,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -27,8 +31,9 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "producto")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ProductoEntity implements Serializable {
-    
+        private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -43,6 +48,12 @@ public class ProductoEntity implements Serializable {
     private TipoproductoEntity tipoproducto;
     
     
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "producto", cascade = {CascadeType.REFRESH})
+    private List<CompraEntity> compras = new ArrayList<>();
+    
+     @OneToMany(fetch = FetchType.LAZY, mappedBy = "producto", cascade = {CascadeType.REFRESH})
+    private List<CarritoEntity> carritos = new ArrayList<>();
+    
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "pedido_producto",
             joinColumns = {
@@ -53,6 +64,9 @@ public class ProductoEntity implements Serializable {
                             nullable = false, updatable = false)})
     private Set<PedidoEntity> pedido = new HashSet<>();
 
+    public ProductoEntity() {
+    }
+    
     public Long getId() {
         return id;
     }
@@ -97,6 +111,15 @@ public class ProductoEntity implements Serializable {
     public String toString() {
         return "ProductoEntity [id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", existencias=" + existencias + ", precio=" + precio  + ", id_tipoproducto=" + tipoproducto.getId() + "]";
     }
+    
+     public int getCompras() {
+        return compras.size();
+    }
+
+    public int getCarritos() {
+        return carritos.size();
+    }
+
 
     public TipoproductoEntity getTipoproducto() {
         return tipoproducto;

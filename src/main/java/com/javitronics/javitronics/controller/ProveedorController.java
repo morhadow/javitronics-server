@@ -5,9 +5,9 @@
  */
 package com.javitronics.javitronics.controller;
 
-import com.javitronics.javitronics.entity.ProductoEntity;
+import com.javitronics.javitronics.entity.ProveedorEntity;
 import com.javitronics.javitronics.entity.UsuarioEntity;
-import com.javitronics.javitronics.repository.ProductoRepository;
+import com.javitronics.javitronics.repository.ProveedorRepository;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,36 +26,35 @@ import org.springframework.web.bind.annotation.RestController;
  * @author JAVIER
  */
 @RestController
-@RequestMapping("/producto")
-public class ProductoController {
-     @Autowired
-    HttpSession oHttpSession;
-     
-    @Autowired
-    ProductoRepository oProductoRepository;
+@RequestMapping("/proveedor")
 
-    
-    
-    
-   @GetMapping("/{id}")
+public class ProveedorController {
+   @Autowired
+HttpSession oHttpSession;
+     
+@Autowired
+ProveedorRepository oProveedorRepository; 
+
+@GetMapping("/{id}")
     public ResponseEntity<?> get(@PathVariable(value = "id") Long id) {
-        if (oProductoRepository.existsById(id)) {
-            return new ResponseEntity<ProductoEntity>(oProductoRepository.getOne(id), HttpStatus.OK);
+        if (oProveedorRepository.existsById(id)) {
+            return new ResponseEntity<ProveedorEntity>(oProveedorRepository.getOne(id), HttpStatus.OK);
         } else {
-            return new ResponseEntity<ProductoEntity>(oProductoRepository.getOne(id), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<ProveedorEntity>(oProveedorRepository.getOne(id), HttpStatus.NOT_FOUND);
         }
     } 
     
     
+    
     @PostMapping("/")
-    public ResponseEntity<?> create(@RequestBody ProductoEntity oProductoEntity) {
+    public ResponseEntity<?> create(@RequestBody ProveedorEntity oProveedorEntity) {
         UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
         if (oUsuarioEntity == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         } else {
             if (oUsuarioEntity.getTipoUsuario().getId() == 1) {
-                if (oProductoEntity.getId() == null) {
-                    return new ResponseEntity<ProductoEntity>(oProductoRepository.save(oProductoEntity), HttpStatus.OK);
+                if (oProveedorEntity.getId() == null) {
+                    return new ResponseEntity<ProveedorEntity>(oProveedorRepository.save(oProveedorEntity), HttpStatus.OK);
                 } else {
                     return new ResponseEntity<Long>(0L, HttpStatus.NOT_MODIFIED);
                 }
@@ -66,8 +65,9 @@ public class ProductoController {
     }
     
     
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable(value = "id") Long id, @RequestBody ProductoEntity oProductoEntity) {
+    
+      @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable(value = "id") Long id, @RequestBody ProveedorEntity oProveedorEntity) {
 
         UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
 
@@ -75,9 +75,9 @@ public class ProductoController {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         } else {
             if (oUsuarioEntity.getTipoUsuario().getId() == 1) { //administrador
-                oProductoEntity.setId(id);
-                if (oProductoRepository.existsById(id)) {
-                    return new ResponseEntity<ProductoEntity>(oProductoRepository.save(oProductoEntity), HttpStatus.OK);
+                oProveedorEntity.setId(id);
+                if (oProveedorRepository.existsById(id)) {
+                    return new ResponseEntity<ProveedorEntity>(oProveedorRepository.save(oProveedorEntity), HttpStatus.OK);
                 } else {
                     return new ResponseEntity<Long>(0L, HttpStatus.NOT_MODIFIED);
                 }
@@ -87,9 +87,9 @@ public class ProductoController {
         }
 
     }
-
     
-
+    
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable(value = "id") Long id) {
         UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
@@ -99,9 +99,9 @@ public class ProductoController {
         } else {
             if (oUsuarioEntity.getTipoUsuario().getId() == 1) {
 
-                oProductoRepository.deleteById(id);
+                oProveedorRepository.deleteById(id);
 
-                if (oProductoRepository.existsById(id)) {
+                if (oProveedorRepository.existsById(id)) {
                     return new ResponseEntity<Long>(id, HttpStatus.NOT_MODIFIED);
                 } else {
                     return new ResponseEntity<Long>(0L, HttpStatus.OK);
@@ -111,5 +111,4 @@ public class ProductoController {
             }
         }
     }
-    
 }

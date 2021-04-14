@@ -23,7 +23,7 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
     UsuarioEntity findByLoginAndPassword(String login, String password);
     
     @Query(value = "SELECT * FROM usuario u WHERE c.id_tipousuario = :id_tipousuario", nativeQuery = true)
-    Page<UsuarioEntity> findByUsuarioXTipousuario(Long id_tipousuario, Pageable pageable);
+    Page<UsuarioEntity> findByUsuarioXTipoUsuario(Long id_tipousuario, Pageable pageable);
 
-    Page<UsuarioEntity> findByTipousuario(TipoUsuarioEntity oTipousuarioEntity, Pageable oPageable);
+    Page<UsuarioEntity> findByTipoUsuario(TipoUsuarioEntity oTipousuarioEntity, Pageable oPageable);
 }

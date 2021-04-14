@@ -5,6 +5,7 @@
  */
 package com.javitronics.javitronics.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "tipoproducto")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
 public class TipoproductoEntity implements Serializable {
     
    @Id
@@ -36,6 +38,10 @@ public class TipoproductoEntity implements Serializable {
     @OneToMany(fetch=FetchType.LAZY,mappedBy="tipoproducto", cascade={CascadeType.REFRESH})
     private List<ProductoEntity> productos = new ArrayList<>();
 
+    
+    public TipoproductoEntity() {
+    }
+    
     public Long getId() {
         return id;
     }
@@ -60,13 +66,13 @@ public class TipoproductoEntity implements Serializable {
         this.nombre = nombre;
     }
 
-    ///public int getProducto() {
-    ///    return productos.size;
-    ///}
+    //public int getProductos() {
+      //  return productos.size;
+    }//
 
     
     
     
     
     
-}
+
