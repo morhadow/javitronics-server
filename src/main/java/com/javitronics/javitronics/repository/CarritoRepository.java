@@ -43,6 +43,6 @@ public interface CarritoRepository extends JpaRepository<CarritoEntity, Long> {
 
     Long deleteByIdAndUsuario(Long id, UsuarioEntity oUsuarioEntity);
         
-    CarritoEntity findByIdAndUsuario(Long idCarrito, UsuarioEntity oUsuarioEntity);            
+    CarritoEntity findByIdAndUsuario(Long id, UsuarioEntity oUsuarioEntity);            
     
 }

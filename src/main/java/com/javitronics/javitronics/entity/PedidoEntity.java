@@ -26,12 +26,14 @@ import javax.persistence.Table;
    @Entity
 @Table(name = "pedido")
 public class PedidoEntity implements Serializable{
+               private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id") 
     private Long id;
     private String codigo;
-    private Integer cantidad;
+    private Long cantidad;
     private Date fecha;
     
     
@@ -67,11 +69,11 @@ public PedidoEntity() {
         this.codigo = codigo;
     }
 
-    public Integer getCantidad() {
+    public Long getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(Integer cantidad) {
+    public void setCantidad(Long cantidad) {
         this.cantidad = cantidad;
     }
 
@@ -82,6 +84,23 @@ public PedidoEntity() {
     public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
+
+    public Set<ProductoEntity> getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Set<ProductoEntity> producto) {
+        this.producto = producto;
+    }
+
+    public Set<ProveedorEntity> getProveedor() {
+        return proveedor;
+    }
+
+    public void setProveedor(Set<ProveedorEntity> proveedor) {
+        this.proveedor = proveedor;
+    }
+    
     
     
 }

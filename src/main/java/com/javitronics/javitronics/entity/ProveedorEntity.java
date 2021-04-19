@@ -22,6 +22,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "proveedor")
 public class ProveedorEntity implements Serializable{
+            private static final long serialVersionUID = 1L;
+
   @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id") 
@@ -29,7 +31,7 @@ public class ProveedorEntity implements Serializable{
 private Long id;
     private String nombre;
     private String apellidos;
-    private String telefono;
+    private Integer telefono;
     private String email;
     private String direccion;
     
@@ -64,13 +66,15 @@ private Long id;
         this.apellidos = apellidos;
     }
 
-    public String getTelefono() {
+    public Integer getTelefono() {
         return telefono;
     }
 
-    public void setTelefono(String telefono) {
+    public void setTelefono(Integer telefono) {
         this.telefono = telefono;
     }
+
+    
 
     public String getEmail() {
         return email;
@@ -86,6 +90,14 @@ private Long id;
 
     public void setDireccion(String direccion) {
         this.direccion = direccion;
+    }
+
+    public Set<PedidoEntity> getPedido() {
+        return pedido;
+    }
+
+    public void setPedido(Set<PedidoEntity> pedido) {
+        this.pedido = pedido;
     }
     
     

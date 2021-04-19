@@ -25,5 +25,5 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
     @Query(value = "SELECT * FROM usuario u WHERE c.id_tipousuario = :id_tipousuario", nativeQuery = true)
     Page<UsuarioEntity> findByUsuarioXTipoUsuario(Long id_tipousuario, Pageable pageable);
 
-    Page<UsuarioEntity> findByTipoUsuario(TipoUsuarioEntity oTipousuarioEntity, Pageable oPageable);
+    Page<UsuarioEntity> findByTipoUsuario(TipoUsuarioEntity oTipoUsuarioEntity, Pageable oPageable);
 }

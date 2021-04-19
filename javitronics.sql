@@ -23,7 +23,7 @@ USE `javitronics` ;
 DROP TABLE IF EXISTS `javitronics`.`tipousuario` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`tipousuario` (
-  `id` INT NOT NULL,
+  `id` BIGINT NOT NULL,
   `nombre` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
@@ -35,7 +35,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `javitronics`.`usuario` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`usuario` (
-  `id` INT NOT NULL,
+  `id` BIGINT NOT NULL,
   `nombre` VARCHAR(45) NULL,
   `apellidos` VARCHAR(45) NULL,
   `dni` VARCHAR(45) NULL,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `javitronics`.`usuario` (
   `usuario` VARCHAR(45) NULL,
   `contraseña` VARCHAR(45) NULL,
   `direccion` VARCHAR(45) NULL,
-  `id_tipousuario` INT NOT NULL,
+  `id_tipousuario` BIGINT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_Usuario_TipoUsuario1_idx` (`id_tipousuario` ASC) VISIBLE,
   CONSTRAINT `fk_Usuario_TipoUsuario1`
@@ -60,7 +60,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `javitronics`.`tipoproducto` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`tipoproducto` (
-  `id` INT NOT NULL,
+  `id` BIGINT NOT NULL,
   `codigo` VARCHAR(45) NULL,
   `nombre` VARCHAR(45) NULL,
   PRIMARY KEY (`id`))
@@ -73,12 +73,12 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `javitronics`.`producto` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`producto` (
-  `id` INT NOT NULL,
+  `id` BIGINT NOT NULL,
   `nombre` VARCHAR(45) NULL,
   `codigo` VARCHAR(45) NULL,
   `existencias` INT NULL,
   `precio` DOUBLE NULL,
-  `id_tipoproducto` INT NOT NULL,
+  `id_tipoproducto` BIGINT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_Producto_Tipoproducto_idx` (`id_tipoproducto` ASC) VISIBLE,
   CONSTRAINT `fk_Producto_Tipoproducto`
@@ -95,10 +95,10 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `javitronics`.`factura` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`factura` (
-  `id` INT NOT NULL,
+  `id` BIGINT NOT NULL,
   `codigo` VARCHAR(45) NULL,
   `fecha` DATE NULL,
-  `id_usuario` INT NOT NULL,
+  `id_usuario` BIGINT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_Factura_Usuario1_idx` (`id_usuario` ASC) VISIBLE,
   CONSTRAINT `fk_Factura_Usuario1`
@@ -115,10 +115,10 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `javitronics`.`compra` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`compra` (
-  `id` INT NOT NULL,
-  `id_usuario` INT NOT NULL,
-  `id_producto` INT NOT NULL,
-  `id_factura` INT NOT NULL,
+  `id` BIGINT NOT NULL,
+  `id_usuario` BIGINT NOT NULL,
+  `id_producto` BIGINT NOT NULL,
+  `id_factura` BIGINT NOT NULL,
   `codigo_envio` VARCHAR(45) NULL,
   PRIMARY KEY (`id`, `id_usuario`),
   INDEX `fk_Compra_Producto1_idx` (`id_producto` ASC) VISIBLE,
@@ -142,9 +142,9 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `javitronics`.`carrito` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`carrito` (
-  `id` INT NOT NULL,
-  `id_producto` INT NOT NULL,
-  `id_usuario` INT NOT NULL,
+  `id` BIGINT NOT NULL,
+  `id_producto` BIGINT NOT NULL,
+  `id_usuario` BIGINT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_Carrito_Producto1_idx` (`id_producto` ASC) VISIBLE,
   INDEX `fk_Carrito_Usuario1_idx` (`id_usuario` ASC) VISIBLE,
@@ -167,9 +167,9 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `javitronics`.`pedido` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`pedido` (
-  `id` INT NOT NULL,
+  `id` BIGINT NOT NULL,
   `codigo` VARCHAR(45) NULL,
-  `cantidad` INT NULL,
+  `cantidad` BIGINT NULL,
   `fecha` DATE NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
@@ -181,7 +181,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `javitronics`.`proveedor` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`proveedor` (
-  `id` INT NOT NULL,
+  `id` BIGINT NOT NULL,
   `nombre` VARCHAR(45) NULL,
   `apellidos` VARCHAR(45) NULL,
   `telefono` INT NULL,
@@ -197,8 +197,8 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `javitronics`.`pedido_producto` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`pedido_producto` (
-  `id_pedido` INT NOT NULL,
-  `id_producto` INT NOT NULL,
+  `id_pedido` BIGINT NOT NULL,
+  `id_producto` BIGINT NOT NULL,
   PRIMARY KEY (`id_pedido`, `id_producto`),
   INDEX `fk_Pedido_has_Producto_Producto1_idx` (`id_producto` ASC) VISIBLE,
   INDEX `fk_Pedido_has_Producto_Pedido1_idx` (`id_pedido` ASC) VISIBLE,
@@ -221,8 +221,8 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `javitronics`.`pedido_proveedor` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`pedido_proveedor` (
-  `id_pedido` INT NOT NULL,
-  `id_proveedor` INT NOT NULL,
+  `id_pedido` BIGINT NOT NULL,
+  `id_proveedor` BIGINT NOT NULL,
   PRIMARY KEY (`id_pedido`, `id_proveedor`),
   INDEX `fk_Pedido_has_Proveedor_Proveedor1_idx` (`id_proveedor` ASC) VISIBLE,
   INDEX `fk_Pedido_has_Proveedor_Pedido1_idx` (`id_pedido` ASC) VISIBLE,
