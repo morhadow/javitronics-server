@@ -6,14 +6,21 @@
 package com.javitronics.javitronics.controller;
 
 import com.javitronics.javitronics.entity.CompraEntity;
+import com.javitronics.javitronics.entity.FacturaEntity;
+import com.javitronics.javitronics.entity.ProductoEntity;
 import com.javitronics.javitronics.entity.UsuarioEntity;
 import com.javitronics.javitronics.repository.CompraRepository;
 import com.javitronics.javitronics.repository.FacturaRepository;
 import com.javitronics.javitronics.repository.ProductoRepository;
 import com.javitronics.javitronics.repository.UsuarioRepository;
+import com.javitronics.javitronics.service.FillService;
+import java.awt.print.Pageable;
 import java.util.List;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,7 +55,8 @@ public class CompraController {
     @Autowired
     UsuarioRepository oUsuarioRepository;
 
-  
+    @Autowired
+    FillService oFillService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> get(@PathVariable(value = "id") Long id) {
@@ -110,7 +118,19 @@ public class CompraController {
         }
     }
 
-    
+    @PostMapping("/fill/{amount}")
+    public ResponseEntity<?> fill(@PathVariable(value = "amount") Long amount) {
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            if (oUsuarioEntity.getTipoUsuario().getId() == 1) {
+                return new ResponseEntity<Long>(oFillService.compraFill(amount), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
+        }
+    }
 
     @PostMapping("/")
     public ResponseEntity<?> create(@RequestBody CompraEntity oCompraEntity) {
@@ -169,6 +189,87 @@ public class CompraController {
                 }
             } else {
                 return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
+        }
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<?> getPage(@PageableDefault(page = 0, size = 10, direction = Direction.ASC) Pageable oPageable) {
+
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        } else {
+
+            if (oUsuarioEntity.getTipoUsuario().getId() == 1) { //Es administrador
+
+                return new ResponseEntity<Page<CompraEntity>>(oCompraRepository.findAll(oPageable), HttpStatus.OK);
+
+            } else {  //Es cliente (puede ver sus propias compras)
+
+                return new ResponseEntity<Page<CompraEntity>>(oCompraRepository.findByCompraXIdUsuario(oUsuarioEntity.getId(), oPageable), HttpStatus.OK);
+            }
+        }
+
+    }
+
+    @GetMapping("/page/producto/{id}")
+    public ResponseEntity<?> getPageXProducto(@PageableDefault(page = 0, size = 10, direction = Direction.ASC) Pageable oPageable, @PathVariable(value = "id") Long id) {
+
+//        Page<CompraEntity> oPage = oCompraRepository.findByCompraXProducto(id, oPageable);
+//        return new ResponseEntity<Page<CompraEntity>>(oPage, HttpStatus.OK);
+        if (oProductoRepository.existsById(id)) {
+            ProductoEntity oProductoEntity = oProductoRepository.getOne(id);
+            Page<CompraEntity> oPage = oCompraRepository.findByProducto(oProductoEntity, oPageable);
+            return new ResponseEntity<Page<CompraEntity>>(oPage, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        }
+
+    }
+
+    @GetMapping("/page/factura/{id}")
+    public ResponseEntity<?> getPageXFactura(@PageableDefault(page = 0, size = 10, direction = Direction.ASC) Pageable oPageable, @PathVariable(value = "id") Long id) {
+
+        if (oFacturaRepository.existsById(id)) {
+            FacturaEntity oFacturaEntity = oFacturaRepository.getOne(id);
+            Page<CompraEntity> oPage = oCompraRepository.findByFactura(oFacturaEntity, oPageable);
+            return new ResponseEntity<Page<CompraEntity>>(oPage, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        }
+
+    }
+
+    @GetMapping("/all/factura/{id}")
+    public ResponseEntity<?> getAllXFactura(@PathVariable(value = "id") Long id) {
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+        Boolean canGet = false;
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            if (oUsuarioEntity.getTipoUsuario().getId() == 1) { //Es administrador
+                if (oFacturaRepository.existsById(id)) {
+                    FacturaEntity oFacturaEntity = oFacturaRepository.getOne(id);
+                    List<CompraEntity> oCompraList = oCompraRepository.findByFactura(oFacturaEntity);
+                    return new ResponseEntity<List<CompraEntity>>(oCompraList, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+                }
+            } else { //es cliente
+                if (oFacturaRepository.existsById(id)) {
+                    FacturaEntity oFacturaEntity = oFacturaRepository.getOne(id);
+                    if (oFacturaEntity.getUsuario().getId().equals(oUsuarioEntity.getId())) { //es su factura
+                        List<CompraEntity> oCompraList = oCompraRepository.findByFactura(oFacturaEntity);
+                        return new ResponseEntity<List<CompraEntity>>(oCompraList, HttpStatus.OK);
+                    } else {
+                        return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+                    }
+                } else {
+                    return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+                }
             }
         }
     }

@@ -26,4 +26,6 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
     Page<UsuarioEntity> findByUsuarioXTipoUsuario(Long id_tipousuario, Pageable pageable);
 
     Page<UsuarioEntity> findByTipoUsuario(TipoUsuarioEntity oTipoUsuarioEntity, Pageable oPageable);
+
+    public Page<UsuarioEntity> findAll(Pageable oPageable);
 }

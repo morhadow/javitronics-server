@@ -4,14 +4,18 @@
  * and open the template in the editor.
  */
 package com.javitronics.javitronics.controller;
-
 import com.javitronics.javitronics.entity.FacturaEntity;
 import com.javitronics.javitronics.entity.UsuarioEntity;
 import com.javitronics.javitronics.repository.FacturaRepository;
 import com.javitronics.javitronics.repository.UsuarioRepository;
+import com.javitronics.javitronics.service.FillService;
+import java.awt.print.Pageable;
 import java.util.List;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,7 +45,8 @@ public class FacturaController {
     @Autowired
     UsuarioRepository oUsuarioRepository;
 
-   
+    @Autowired
+    FillService oFillService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> get(@PathVariable(value = "id") Long id) {
@@ -167,4 +172,84 @@ public class FacturaController {
         }
 
     }
+
+    @GetMapping("/page")
+    public ResponseEntity<?> getPage(@PageableDefault(page = 0, size = 10, direction = Direction.ASC) Pageable oPageable) {
+
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+//        FacturaEntity oFacturaEntity = new FacturaEntity();
+
+        Page<FacturaEntity> oPage = oFacturaRepository.findAll(oPageable);
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            if (oUsuarioEntity.getTipoUsuario().getId() == 1) { //administrador
+                return new ResponseEntity<Page<FacturaEntity>>(oPage, HttpStatus.OK);
+            } else {  //cliente
+//                if (oFacturaEntity2.getUsuario().getId().equals(oUsuarioEntity.getId())) {  //los datos pedidos por el cliente son sus propios datos?
+//                    return new ResponseEntity<Page<FacturaEntity>>(oPage, HttpStatus.OK);
+                return new ResponseEntity<Page<FacturaEntity>>(oFacturaRepository.findByFacturaXUsuario(oUsuarioEntity.getId(), oPageable), HttpStatus.OK);
+//                } else {
+//                    return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+//                }
+            }
+        }
+    }
+
+    @GetMapping("/pagexusuario/{id}")
+    public ResponseEntity<?> getPageXUsuario(@PageableDefault(page = 0, size = 10, direction = Direction.ASC) Pageable oPageable, @PathVariable(value = "id") Long id) {
+
+        if (oUsuarioRepository.existsById(id)) {
+            UsuarioEntity oUsuarioEntity = oUsuarioRepository.getOne(id);
+            Page<FacturaEntity> oPage = oFacturaRepository.findByUsuario(oUsuarioEntity, oPageable);
+            return new ResponseEntity<Page<FacturaEntity>>(oPage, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/allxusuario/{id}")
+    public ResponseEntity<?> getAllXUsuario(@PathVariable(value = "id") Long id) {
+        if (oUsuarioRepository.existsById(id)) {
+            UsuarioEntity oUsuarioEntity = oUsuarioRepository.getOne(id);
+            if (oUsuarioEntity.getTipoUsuario().getId() > 1) {
+                List<FacturaEntity> oPage = oFacturaRepository.findByUsuario(oUsuarioEntity);
+                return new ResponseEntity<List<FacturaEntity>>(oPage, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        }
+    }
+
+
+    @PostMapping("/fill/{amount}")
+    public ResponseEntity<?> fill(@PathVariable(value = "amount") Long amount) {
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            if (oUsuarioEntity.getTipoUsuario().getId() == 1) {
+                return new ResponseEntity<Long>(oFillService.facturaFill(amount), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
+        }
+    }
+
+
+    @GetMapping("/page/usuario/{id}")
+    public ResponseEntity<?> getPageXusuario(@PageableDefault(page = 0, size = 10, direction = Direction.ASC) Pageable oPageable, @PathVariable(value = "id") Long id) {
+
+        if (oUsuarioRepository.existsById(id)) {
+            UsuarioEntity oUsuarioEntity = oUsuarioRepository.getOne(id);
+            Page<FacturaEntity> oPage = oFacturaRepository.findByUsuario(oUsuarioEntity, oPageable);
+            return new ResponseEntity<Page<FacturaEntity>>(oPage, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        }
+
+    }
+
 }

@@ -24,10 +24,12 @@ DROP TABLE IF EXISTS `javitronics`.`tipousuario` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`tipousuario` (
   `id` BIGINT NOT NULL,
-  `nombre` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+  `nombre` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+INSERT INTO `tipousuario` (`id`, `nombre`) VALUES
+(1, 'Administrador'),
+(2, 'Cliente');
 
 -- -----------------------------------------------------
 -- Table `mydb`.`usuario`
@@ -35,23 +37,32 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `javitronics`.`usuario` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`usuario` (
-  `id` BIGINT NOT NULL,
-  `nombre` VARCHAR(45) NULL,
-  `apellidos` VARCHAR(45) NULL,
-  `dni` VARCHAR(45) NULL,
-  `email` VARCHAR(45) NULL,
-  `usuario` VARCHAR(45) NULL,
-  `contraseña` VARCHAR(45) NULL,
-  `direccion` VARCHAR(45) NULL,
-  `id_tipousuario` BIGINT NOT NULL,
+  `id` bigint(20) NOT NULL,
+  `dni` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `nombre` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `apellido1` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `apellido2` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `login` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `password` varchar(512) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'da8ab09ab4889c6208116a675cad0b13e335943bd7fc418782d054b32fdfba04',
+  `email` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `descuento` int(11) NOT NULL DEFAULT '0',
+  `id_tipousuario` bigint(20) NOT NULL DEFAULT '2',
   PRIMARY KEY (`id`),
   INDEX `fk_Usuario_TipoUsuario1_idx` (`id_tipousuario` ASC) VISIBLE,
   CONSTRAINT `fk_Usuario_TipoUsuario1`
     FOREIGN KEY (`id_tipousuario`)
     REFERENCES `javitronics`.`tipousuario` (`id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    ON UPDATE NO ACTION) 
+ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
+INSERT INTO `usuario` (`id`, `dni`, `nombre`, `apellido1`, `apellido2`, `login`, `password`, `email`, `descuento`, `id_tipousuario`) VALUES
+(1, '12359854R', 'Admin', 'Administrador', 'Administrador', 'admin', 'da8ab09ab4889c6208116a675cad0b13e335943bd7fc418782d054b32fdfba04', 'admin@javitronics.com', 0, 1),
+(2, '23325596P', 'Javier', 'Mocholi', 'Ortega', 'javi', 'da8ab09ab4889c6208116a675cad0b13e335943bd7fc418782d054b32fdfba04', 'javi@javitronics.com', 0, 2),
+(3, '21470032S', 'Juan', 'Ortegs', 'Ruiz', 'juan', 'da8ab09ab4889c6208116a675cad0b13e335943bd7fc418782d054b32fdfba04', 'juan@javitronics.com', 0, 2);
+
 
 
 -- -----------------------------------------------------
@@ -61,11 +72,10 @@ DROP TABLE IF EXISTS `javitronics`.`tipoproducto` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`tipoproducto` (
   `id` BIGINT NOT NULL,
-  `codigo` VARCHAR(45) NULL,
-  `nombre` VARCHAR(45) NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
-
+  `codigo` VARCHAR(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `nombre` VARCHAR(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+ )
+ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- -----------------------------------------------------
 -- Table `mydb`.`producto`
@@ -74,20 +84,14 @@ DROP TABLE IF EXISTS `javitronics`.`producto` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`producto` (
   `id` BIGINT NOT NULL,
-  `nombre` VARCHAR(45) NULL,
-  `codigo` VARCHAR(45) NULL,
-  `existencias` INT NULL,
-  `precio` DOUBLE NULL,
+  `nombre` VARCHAR(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `codigo` VARCHAR(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `existencias` INT NOT NULL,
+  `precio` DOUBLE NOT NULL,
+  `descuento` int(11) NOT NULL,
   `id_tipoproducto` BIGINT NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `fk_Producto_Tipoproducto_idx` (`id_tipoproducto` ASC) VISIBLE,
-  CONSTRAINT `fk_Producto_Tipoproducto`
-    FOREIGN KEY (`id_tipoproducto`)
-    REFERENCES `javitronics`.`tipoproducto` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
+ )
+ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- -----------------------------------------------------
 -- Table `mydb`.`factura`
@@ -96,18 +100,13 @@ DROP TABLE IF EXISTS `javitronics`.`factura` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`factura` (
   `id` BIGINT NOT NULL,
-  `codigo` VARCHAR(45) NULL,
-  `fecha` DATE NULL,
+  `codigo` VARCHAR(45) NOT NULL,
+  `fecha` DATETIME NOT NULL,
+ `iva` int(11) NOT NULL,
   `id_usuario` BIGINT NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `fk_Factura_Usuario1_idx` (`id_usuario` ASC) VISIBLE,
-  CONSTRAINT `fk_Factura_Usuario1`
-    FOREIGN KEY (`id_usuario`)
-    REFERENCES `javitronics`.`usuario` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
+`pagado` tinyint(1) NOT NULL
+  )
+ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- -----------------------------------------------------
 -- Table `mydb`.`compra`
@@ -116,25 +115,16 @@ DROP TABLE IF EXISTS `javitronics`.`compra` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`compra` (
   `id` BIGINT NOT NULL,
-  `id_usuario` BIGINT NOT NULL,
+`cantidad` int(11) NOT NULL,
+  `precio` double(10,2) NOT NULL,
+  `fecha` datetime NOT NULL,
+  `descuento_usuario` int(11) NOT NULL,
+  `descuento_producto` int(11) NOT NULL,
   `id_producto` BIGINT NOT NULL,
   `id_factura` BIGINT NOT NULL,
-  `codigo_envio` VARCHAR(45) NULL,
-  PRIMARY KEY (`id`, `id_usuario`),
-  INDEX `fk_Compra_Producto1_idx` (`id_producto` ASC) VISIBLE,
-  INDEX `fk_Compra_Factura1_idx` (`id_factura` ASC) VISIBLE,
-  CONSTRAINT `fk_Compra_Producto1`
-    FOREIGN KEY (`id_producto`)
-    REFERENCES `javitronics`.`producto` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Compra_Factura1`
-    FOREIGN KEY (`id_factura`)
-    REFERENCES `javitronics`.`factura` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
+  `codigo_envio` VARCHAR(45) NOT NULL,
+  )
+ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- -----------------------------------------------------
 -- Table `mydb`.`carrito`
@@ -143,23 +133,12 @@ DROP TABLE IF EXISTS `javitronics`.`carrito` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`carrito` (
   `id` BIGINT NOT NULL,
+`cantidad` int(11) NOT NULL,
+`precio` double(10,2) NOT NULL,
   `id_producto` BIGINT NOT NULL,
   `id_usuario` BIGINT NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `fk_Carrito_Producto1_idx` (`id_producto` ASC) VISIBLE,
-  INDEX `fk_Carrito_Usuario1_idx` (`id_usuario` ASC) VISIBLE,
-  CONSTRAINT `fk_Carrito_Producto1`
-    FOREIGN KEY (`id_producto`)
-    REFERENCES `javitronics`.`producto` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Carrito_Usuario1`
-    FOREIGN KEY (`id_usuario`)
-    REFERENCES `javitronics`.`usuario` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
+ )
+ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- -----------------------------------------------------
 -- Table `mydb`.`pedido`
@@ -168,12 +147,11 @@ DROP TABLE IF EXISTS `javitronics`.`pedido` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`pedido` (
   `id` BIGINT NOT NULL,
-  `codigo` VARCHAR(45) NULL,
-  `cantidad` BIGINT NULL,
-  `fecha` DATE NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
-
+  `codigo` VARCHAR(45) NOT NULL,
+  `cantidad` BIGINT NOT NULL,
+  `fecha` datetime NOT NULL,
+  )
+ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- -----------------------------------------------------
 -- Table `mydb`.`proveedor`
@@ -182,14 +160,13 @@ DROP TABLE IF EXISTS `javitronics`.`proveedor` ;
 
 CREATE TABLE IF NOT EXISTS `javitronics`.`proveedor` (
   `id` BIGINT NOT NULL,
-  `nombre` VARCHAR(45) NULL,
-  `apellidos` VARCHAR(45) NULL,
-  `telefono` INT NULL,
-  `email` VARCHAR(45) NULL,
-  `direccion` VARCHAR(45) NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
-
+  `nombre` VARCHAR(45) NOT NULL,
+  `apellidos` VARCHAR(45) NOT NULL,
+  `telefono` INT NOT NULL,
+  `email` VARCHAR(45) NOT NULL,
+  `direccion` VARCHAR(45) NOT NULL,
+  )
+ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- -----------------------------------------------------
 -- Table `mydb`.`pedido_producto`
@@ -212,8 +189,7 @@ CREATE TABLE IF NOT EXISTS `javitronics`.`pedido_producto` (
     REFERENCES `javitronics`.`producto` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
+ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- -----------------------------------------------------
 -- Table `mydb`.`pedido_proveedor`
@@ -236,7 +212,127 @@ CREATE TABLE IF NOT EXISTS `javitronics`.`pedido_proveedor` (
     REFERENCES `javitronics`.`proveedor` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+-- Indices de la tabla `carrito`
+--
+ALTER TABLE `carrito`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `compra`
+--
+ALTER TABLE `compra`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `factura`
+--
+ALTER TABLE `factura`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `producto`
+--
+ALTER TABLE `producto`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `tipoproducto`
+--
+ALTER TABLE `tipoproducto`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `tipousuario`
+--
+ALTER TABLE `tipousuario`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `usuario`
+--
+ALTER TABLE `usuario`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `pedido`
+--
+ALTER TABLE `pedido`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `proveedor`
+--
+ALTER TABLE `proveedor`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `carrito`
+--
+ALTER TABLE `carrito`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `compra`
+--
+ALTER TABLE `compra`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `factura`
+--
+ALTER TABLE `factura`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `producto`
+--
+ALTER TABLE `producto`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tipoproducto`
+--
+ALTER TABLE `tipoproducto`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tipousuario`
+--
+ALTER TABLE `tipousuario`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `usuario`
+--
+ALTER TABLE `usuario`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+
+--
+-- AUTO_INCREMENT de la tabla `pedido`
+--
+ALTER TABLE `pedido`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+
+--
+-- AUTO_INCREMENT de la tabla `proveedor`
+--
+ALTER TABLE `proveedor`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+COMMIT;
+
+
+
+
+
 
 
 SET SQL_MODE=@OLD_SQL_MODE;

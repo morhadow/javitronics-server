@@ -38,10 +38,11 @@ public class ProductoEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    private String nombre;
     private String codigo;
+    private String nombre;
     private Integer existencias;
     private Double precio;
+    private Integer descuento;
    
     @ManyToOne(fetch=FetchType.EAGER, cascade={CascadeType.REFRESH})
     @JoinColumn(name="id_tipoproducto")
@@ -107,9 +108,18 @@ public class ProductoEntity implements Serializable {
         this.precio = precio;
     }
     
-    @Override
+    
+    public Integer getDescuento() {
+        return descuento;
+    }
+
+    public void setDescuento(Integer descuento) {
+        this.descuento = descuento;
+    }
+    
+     @Override
     public String toString() {
-        return "ProductoEntity [id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", existencias=" + existencias + ", precio=" + precio  + ", id_tipoproducto=" + tipoproducto.getId() + "]";
+        return "ProductoEntity [id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", existencias=" + existencias + ", precio=" + precio +  ", descuento=" + descuento + ", id_tipoproducto=" + tipoproducto.getId() + "]";
     }
     
      public int getCompras() {

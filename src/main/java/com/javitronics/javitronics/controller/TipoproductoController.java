@@ -4,13 +4,17 @@
  * and open the template in the editor.
  */
 package com.javitronics.javitronics.controller;
-
+import java.util.List;
+import javax.servlet.http.HttpSession;
 import com.javitronics.javitronics.entity.TipoproductoEntity;
 import com.javitronics.javitronics.entity.UsuarioEntity;
 import com.javitronics.javitronics.repository.TipoproductoRepository;
-import java.util.List;
-import javax.servlet.http.HttpSession;
+import com.javitronics.javitronics.service.FillService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author JAVIER
  */
+
 @RestController
 @RequestMapping("/tipoproducto")
 public class TipoproductoController {
@@ -36,7 +41,8 @@ public class TipoproductoController {
     @Autowired
     TipoproductoRepository oTipoproductoRepository;
 
-   
+    @Autowired
+    FillService oFillService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> get(@PathVariable(value = "id") Long id) {
@@ -86,7 +92,19 @@ public class TipoproductoController {
         
     }
 
-    
+    @PostMapping("/fill/{amount}")
+    public ResponseEntity<?> fill(@PathVariable(value = "amount") Long amount) {
+          UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");     
+            if (oUsuarioEntity == null) {
+                 return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }else{
+                 if (oUsuarioEntity.getTipoUsuario().getId() == 1) {
+                    return new ResponseEntity<Long>(oFillService.tipoproductoFill(amount), HttpStatus.OK);
+                }else{
+                    return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+                }
+            }    
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable(value = "id") Long id) {
@@ -111,7 +129,12 @@ public class TipoproductoController {
     }
 
 
-  
+    @GetMapping("/page")
+    public ResponseEntity<?> getPage(@PageableDefault(page = 0, size = 10, direction = Direction.ASC) Pageable oPageable) {
+
+        Page<TipoproductoEntity> oPage = oTipoproductoRepository.findAll(oPageable);
+        return new ResponseEntity<Page<TipoproductoEntity>>(oPage, HttpStatus.OK);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable(value = "id") Long id, @RequestBody TipoproductoEntity oTipoproductoEntity) {

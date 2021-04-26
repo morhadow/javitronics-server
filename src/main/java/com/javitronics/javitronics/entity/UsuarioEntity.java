@@ -30,61 +30,55 @@ import javax.persistence.Table;
 @Table(name = "usuario")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class UsuarioEntity implements Serializable {
-    
-        private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    
     private Long id;
-    private String nombre;
-    private String apellidos;
     private String dni;
+    private String nombre;
+    private String apellido1;
+    private String apellido2;
+    private String login;
+    
+    @JsonIgnore
+    private String password;
+    
     private String email;
-    private String usuario;
-     @JsonIgnore
-    private String contraseña;
-
+    private Integer descuento;
+    
     @ManyToOne(fetch=FetchType.EAGER, cascade={CascadeType.REFRESH})
     @JoinColumn(name="id_tipousuario")
     private TipoUsuarioEntity tipousuario;
     
-     @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario", cascade = {CascadeType.REFRESH})
+    @JsonIgnore
+    private String token;
+    @JsonIgnore
+    private boolean validado;
+    @JsonIgnore
+    private boolean activo;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario", cascade = {CascadeType.REFRESH})
     private List<FacturaEntity> facturas = new ArrayList<>();
     
-   
-    
-    
-     public UsuarioEntity() {
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario", cascade = {CascadeType.REFRESH})
+    private List<CarritoEntity> carritos = new ArrayList<>();
+
+    public UsuarioEntity() {
     }
 
     public UsuarioEntity(Long id) {
         this.id = id;
     }
-    
-    
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getApellidos() {
-        return apellidos;
-    }
-
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
     }
 
     public String getDni() {
@@ -95,6 +89,46 @@ public class UsuarioEntity implements Serializable {
         this.dni = dni;
     }
 
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getApellido1() {
+        return apellido1;
+    }
+
+    public void setApellido1(String apellido1) {
+        this.apellido1 = apellido1;
+    }
+
+    public String getApellido2() {
+        return apellido2;
+    }
+
+    public void setApellido2(String apellido2) {
+        this.apellido2 = apellido2;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -103,20 +137,36 @@ public class UsuarioEntity implements Serializable {
         this.email = email;
     }
 
-    public String getUsuario() {
-        return usuario;
+    public Integer getDescuento() {
+        return descuento;
     }
 
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
+    public void setDescuento(Integer descuento) {
+        this.descuento = descuento;
     }
 
-    public String getContraseña() {
-        return contraseña;
+    public String getToken() {
+        return token;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public boolean isValidado() {
+        return validado;
+    }
+
+    public void setValidado(boolean validado) {
+        this.validado = validado;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
     public TipoUsuarioEntity getTipoUsuario() {
@@ -126,11 +176,18 @@ public class UsuarioEntity implements Serializable {
     public void setTipoUsuario(TipoUsuarioEntity tipousuario) {
         this.tipousuario = tipousuario;
     }
-    
+
     @Override
     public String toString() {
-        return "Usuario [id=" + id  + ",nombre=" + nombre + ",apellidos=" + apellidos + ",dni=" + dni + ",usuario=" + usuario
-                + ",email=" + email + "]";
+        return "Usuario [id=" + id + ",dni=" + dni + ",nombre=" + nombre + ",apellido1=" + apellido1 + ",login=" + login
+                + ",email=" + email + ",descuento=" + descuento + "]";
     }
 
+    public int getCarritos() {
+        return carritos.size();
+    }
+
+    public int getFacturas() {
+        return facturas.size();
+    }
 }

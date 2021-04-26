@@ -30,7 +30,8 @@ public class CarritoEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    
+    private Integer cantidad;
+    private Double precio;
     
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH})
     @JoinColumn(name = "id_producto")
@@ -46,32 +47,41 @@ public class CarritoEntity implements Serializable {
     public CarritoEntity(Long id){
         this.id = id;
     }
-    /**
-     * @return the id
-     */
+  
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+   
     public void setId(Long id) {
         this.id = id;
     }
 
     
+    public Integer getCantidad() {
+        return cantidad;
+    }
 
-    /**
-     * @return the id_producto
-     */
+    
+    public void setCantidad(Integer cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    
+    public Double getPrecio() {
+        return precio;
+    }
+
+   
+    public void setPrecio(Double precio) {
+        this.precio = precio;
+    }
+
     public ProductoEntity getProducto() {
         return producto;
     }
 
-    /**
-     * @param id_producto the id_producto to set
-     */
+    
     public void setProducto(ProductoEntity producto) {
         this.producto = producto;
     }

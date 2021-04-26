@@ -8,9 +8,14 @@ package com.javitronics.javitronics.controller;
 import com.javitronics.javitronics.entity.UsuarioEntity;
 import com.javitronics.javitronics.repository.TipoUsuarioRepository;
 import com.javitronics.javitronics.repository.UsuarioRepository;
+import com.javitronics.javitronics.service.FillService;
+import java.awt.print.Pageable;
 import java.util.List;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,9 +42,10 @@ public class UsuarioController {
     UsuarioRepository oUsuarioRepository;
 
     @Autowired
-    TipoUsuarioRepository oTipoUsuarioRepository;
+    TipoUsuarioRepository oTipousuarioRepository;
 
-    
+    @Autowired
+    FillService oFillService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> get(@PathVariable(value = "id") Long id) {
@@ -95,11 +101,49 @@ public class UsuarioController {
         } else {
             if (oUsuarioEntity.getTipoUsuario().getId() == 1) {
                 if (oNewUsuarioEntity.getId() == null) {
-                    oNewUsuarioEntity.setContraseña("da8ab09ab4889c6208116a675cad0b13e335943bd7fc418782d054b32fdfba04");
+                    oNewUsuarioEntity.setPassword("da8ab09ab4889c6208116a675cad0b13e335943bd7fc418782d054b32fdfba04");
+                    oNewUsuarioEntity.setActivo(false);
+                    oNewUsuarioEntity.setValidado(false);
                     return new ResponseEntity<UsuarioEntity>(oUsuarioRepository.save(oNewUsuarioEntity), HttpStatus.OK);
                 } else {
                     return new ResponseEntity<Long>(0L, HttpStatus.NOT_MODIFIED);
                 }
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
+        }
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<?> count() {
+
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        } else {
+
+            if (oUsuarioEntity.getTipoUsuario().getId() == 1) { //administrador
+
+                return new ResponseEntity<Long>(oUsuarioRepository.count(), HttpStatus.OK);
+
+            } else {  //cliente
+
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
+        }
+    }
+
+    @PostMapping("/fill/{amount}")
+    public ResponseEntity<?> fill(@PathVariable(value = "amount") Long amount) {
+
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            if (oUsuarioEntity.getTipoUsuario().getId() == 1) {
+                return new ResponseEntity<Long>(oFillService.usuarioFill(amount), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
             }
@@ -138,7 +182,10 @@ public class UsuarioController {
             if (oUsuarioEntity2.getTipoUsuario().getId() == 1) { //administrador
                 if (oUsuarioRepository.existsById(id)) {
                     UsuarioEntity oUsuarioEntity3 = oUsuarioRepository.getOne(id);
-                    oUsuarioEntity.setContraseña(oUsuarioEntity3.getContraseña());
+                    oUsuarioEntity.setPassword(oUsuarioEntity3.getPassword());
+                    oUsuarioEntity.setToken(oUsuarioEntity3.getToken());
+                    oUsuarioEntity.setActivo(oUsuarioEntity3.isActivo());
+                    oUsuarioEntity.setValidado(oUsuarioEntity3.isValidado());
                     return new ResponseEntity<UsuarioEntity>(oUsuarioRepository.save(oUsuarioEntity), HttpStatus.OK);
                 } else {
                     return new ResponseEntity<UsuarioEntity>(oUsuarioRepository.getOne(id), HttpStatus.NOT_FOUND);
@@ -146,12 +193,34 @@ public class UsuarioController {
             } else {  //cliente
                 if (oUsuarioEntity2.getId() == id) {
                     UsuarioEntity oUsuarioEntity3 = oUsuarioRepository.getOne(id);
-                    oUsuarioEntity.setContraseña(oUsuarioEntity3.getContraseña());     
+                    oUsuarioEntity.setPassword(oUsuarioEntity3.getPassword());
+                    oUsuarioEntity.setToken(oUsuarioEntity3.getToken());
+                    oUsuarioEntity.setActivo(oUsuarioEntity3.isActivo());
+                    oUsuarioEntity.setValidado(oUsuarioEntity3.isValidado());
                     return new ResponseEntity<UsuarioEntity>(oUsuarioRepository.save(oUsuarioEntity), HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
                 }
             }
+        }
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<?> getPage(@PageableDefault(page = 0, size = 10, direction = Direction.ASC) Pageable oPageable) {
+
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+
+        Page<UsuarioEntity> oPage = oUsuarioRepository.findAll(oPageable);
+
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            if (oUsuarioEntity.getTipoUsuario().getId() == 1) { //administrador
+                return new ResponseEntity<Page<UsuarioEntity>>(oPage, HttpStatus.OK);
+            } else {  //cliente
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
+
         }
     }
 

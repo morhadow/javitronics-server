@@ -27,7 +27,6 @@ public interface CompraRepository extends JpaRepository<CompraEntity, Long> {
 
     Page<CompraEntity> findByProducto(ProductoEntity oProductoEntity, Pageable oPageable);
 
-//    public Page<CompraEntity> findById_producto(Long id, Pageable oPageable);
     @Query(value = "SELECT * FROM compra c WHERE c.id_factura = :id_factura", nativeQuery = true)
     Page<CompraEntity> findByCompraXFactura(Long id_factura, Pageable pageable);
 
@@ -37,5 +36,7 @@ public interface CompraRepository extends JpaRepository<CompraEntity, Long> {
     Page<CompraEntity> findByCompraXIdUsuario(Long id_usuario, Pageable pageable);    
 
     List<CompraEntity> findByFactura(FacturaEntity oFacturaEntity);
+
+    public Page<CompraEntity> findAll(Pageable oPageable);
 
 }

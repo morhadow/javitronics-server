@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
  *
  * @author JAVIER
  */
+
 @Repository
 public interface CarritoRepository extends JpaRepository<CarritoEntity, Long> {
 
@@ -43,6 +44,10 @@ public interface CarritoRepository extends JpaRepository<CarritoEntity, Long> {
 
     Long deleteByIdAndUsuario(Long id, UsuarioEntity oUsuarioEntity);
         
-    CarritoEntity findByIdAndUsuario(Long id, UsuarioEntity oUsuarioEntity);            
+    CarritoEntity findByIdAndUsuario(Long idCarrito, UsuarioEntity oUsuarioEntity);            
+
+    public Page<CarritoEntity> findByUsuario(UsuarioEntity oUsuarioEntity, org.springframework.data.domain.Pageable oPageable);
+
+    public Page<CarritoEntity> findByProducto(ProductoEntity oProductoEntity, org.springframework.data.domain.Pageable oPageable);
     
 }
