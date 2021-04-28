@@ -9,13 +9,16 @@ import java.util.Optional;
 import com.javitronics.javitronics.entity.CompraEntity;
 import com.javitronics.javitronics.entity.FacturaEntity;
 import com.javitronics.javitronics.entity.ProductoEntity;
+import com.javitronics.javitronics.entity.ProveedorEntity;
 import com.javitronics.javitronics.entity.TipoproductoEntity;
 import com.javitronics.javitronics.entity.TipoUsuarioEntity;
 import com.javitronics.javitronics.entity.UsuarioEntity;
 import com.javitronics.javitronics.helper.RandomHelper;
 import com.javitronics.javitronics.repository.CompraRepository;
 import com.javitronics.javitronics.repository.FacturaRepository;
+import com.javitronics.javitronics.repository.PedidoRepository;
 import com.javitronics.javitronics.repository.ProductoRepository;
+import com.javitronics.javitronics.repository.ProveedorRepository;
 import com.javitronics.javitronics.repository.TipoproductoRepository;
 import com.javitronics.javitronics.repository.TipoUsuarioRepository;
 import com.javitronics.javitronics.repository.UsuarioRepository;
@@ -46,6 +49,12 @@ public class FillService {
 
     @Autowired
     FacturaRepository oFacturaRepository;
+    
+    @Autowired
+    ProveedorRepository oProveedorRepository;
+    
+    @Autowired
+    PedidoRepository oPedidoRepository;
 
     public String getProducto01c() {
         String nombre = "";
@@ -403,4 +412,32 @@ public class FillService {
 
     }
 
+    
+    public Long pedidoFill(Long cantidad) {
+        
+         return cantidad;
+   
+    }
+    
+    public Long proveedorFill(Long cantidad) {
+        String[] nombre = {"Andrea", "David", "Baldomero", "Balduino", "Baldwin", "Baltasar", "Barry", "Bartolo",
+            "Bartolomé", "Baruc", "Baruj", "Candelaria", "Cándida", "Canela", "Caridad", "Carina", "Carisa",
+            "Caritina", "Carlota", "Baltazar"};
+        String[] apellidos = {"Gomez", "Guerrero", "Cardenas", "Cardiel", "Cardona", "Cardoso", "Cariaga", "Carillo",
+            "Carion", "Castiyo", "Castorena", "Castro", "Grande", "Grangenal", "Grano", "Grasia", "Griego",
+            "Grigalva"};
+        
+        for (int i = 1; i <= cantidad; i++) {
+            ProveedorEntity oProveedorEntity = new ProveedorEntity();
+            oProveedorEntity.setNombre(nombre);
+            oProveedorEntity.setApellidos(apellidos);
+            oProveedorEntity.setEmail(nombre + apellidos.charAt(0) + "@javitronics.net");
+            oProveedorEntity.setTelefono(RandomHelper.getRandomInt(9,9));
+            
+            oProveedorRepository.save(oProveedorEntity);
+        }
+         return cantidad;
+   
+    }
+    
 }

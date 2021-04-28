@@ -112,6 +112,21 @@ PedidoRepository oPedidoRepository;
             }
         }
     }
+    
+    
+    @PostMapping("/fill/{amount}")
+    public ResponseEntity<?> fill(@PathVariable(value = "amount") Long amount) {
+        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+        if (oUsuarioEntity == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            if (oUsuarioEntity.getTipoUsuario().getId() == 1) {
+                return new ResponseEntity<Long>(oFillService.pedidoFill(amount), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
+        }
+    }
 }
 
 
