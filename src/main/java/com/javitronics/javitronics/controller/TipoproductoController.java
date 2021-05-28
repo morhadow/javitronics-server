@@ -10,6 +10,7 @@ import com.javitronics.javitronics.entity.TipoproductoEntity;
 import com.javitronics.javitronics.entity.UsuarioEntity;
 import com.javitronics.javitronics.repository.TipoproductoRepository;
 import com.javitronics.javitronics.service.FillService;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -67,56 +69,70 @@ public class TipoproductoController {
         return new ResponseEntity<Long>(oTipoproductoRepository.count(), HttpStatus.OK);
     }
 
+    @GetMapping("/page")
+    public ResponseEntity<?> getPage(@RequestParam("filter") Optional<String> strSearch, @PageableDefault(page = 0, size = 10, direction = Direction.ASC) Pageable oPageable) {
+        Page<TipoproductoEntity> oPage;
+        if (strSearch.isPresent()) {
+            oPage = oTipoproductoRepository.findByNombreContainingIgnoreCase(strSearch.get(), oPageable);
+        } else {
+            oPage = oTipoproductoRepository.findAll(oPageable);
+        }
+        return new ResponseEntity<Page<TipoproductoEntity>>(oPage, HttpStatus.OK);
+    }
+
     @PostMapping("/")
-    public ResponseEntity<?> create(@RequestBody TipoproductoEntity oTipoproductoEntity) {
-        
-        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
-       
-        if (oUsuarioEntity == null) {
+    public ResponseEntity<?> create(@RequestBody TipoproductoEntity oTipoproductoEntityFromRequest) {
+        UsuarioEntity oUsuarioEntityFromSession = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+        if (oUsuarioEntityFromSession == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-        }else{
-            if (oUsuarioEntity.getTipoUsuario().getId() == 1) {
-
-                if (oTipoproductoEntity.getId() == null) {
-                    return new ResponseEntity<TipoproductoEntity>(oTipoproductoRepository.save(oTipoproductoEntity), HttpStatus.OK);
-                } else {
-                    return new ResponseEntity<Long>(0L, HttpStatus.NOT_MODIFIED);
-                }
-
-            }else{
+        } else {
+            if (oUsuarioEntityFromSession.getTipoUsuario().getId() == 1) {
+                oTipoproductoEntityFromRequest.setId(null);
+                return new ResponseEntity<TipoproductoEntity>(oTipoproductoRepository.save(oTipoproductoEntityFromRequest), HttpStatus.OK);
+            } else {
 
                 return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
             }
-            
-        }           
-        
+        }
     }
 
     @PostMapping("/fill/{amount}")
     public ResponseEntity<?> fill(@PathVariable(value = "amount") Long amount) {
-          UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");     
-            if (oUsuarioEntity == null) {
-                 return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-            }else{
-                 if (oUsuarioEntity.getTipoUsuario().getId() == 1) {
-                    return new ResponseEntity<Long>(oFillService.tipoproductoFill(amount), HttpStatus.OK);
-                }else{
-                    return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-                }
-            }    
+        UsuarioEntity oUsuarioEntityFromSession = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+        if (oUsuarioEntityFromSession == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            if (oUsuarioEntityFromSession.getTipoUsuario().getId() == 1) {
+                return new ResponseEntity<Long>(oFillService.tipoproductoFill(amount), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable(value = "id") Long id, @RequestBody TipoproductoEntity oTipoproductoEntityFromRequest) {
+        UsuarioEntity oUsuarioEntityFromSession = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+        if (oUsuarioEntityFromSession == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            oTipoproductoEntityFromRequest.setId(id);
+            if (oTipoproductoRepository.existsById(id)) {
+                return new ResponseEntity<TipoproductoEntity>(oTipoproductoRepository.save(oTipoproductoEntityFromRequest), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<Long>(0L, HttpStatus.NOT_MODIFIED);
+            }
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable(value = "id") Long id) {
-        UsuarioEntity oUsuarioEntity = (UsuarioEntity) oHttpSession.getAttribute("usuario");
-
-        if (oUsuarioEntity == null) {
+        UsuarioEntity oUsuarioEntityFromSession = (UsuarioEntity) oHttpSession.getAttribute("usuario");
+        if (oUsuarioEntityFromSession == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         } else {
-            if (oUsuarioEntity.getTipoUsuario().getId() == 1) {
-
+            if (oUsuarioEntityFromSession.getTipoUsuario().getId() == 1) {
                 oTipoproductoRepository.deleteById(id);
-
                 if (oTipoproductoRepository.existsById(id)) {
                     return new ResponseEntity<Long>(id, HttpStatus.NOT_MODIFIED);
                 } else {
@@ -125,24 +141,6 @@ public class TipoproductoController {
             } else {
                 return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
             }
-        }
-    }
-
-
-    @GetMapping("/page")
-    public ResponseEntity<?> getPage(@PageableDefault(page = 0, size = 10, direction = Direction.ASC) Pageable oPageable) {
-
-        Page<TipoproductoEntity> oPage = oTipoproductoRepository.findAll(oPageable);
-        return new ResponseEntity<Page<TipoproductoEntity>>(oPage, HttpStatus.OK);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable(value = "id") Long id, @RequestBody TipoproductoEntity oTipoproductoEntity) {
-        oTipoproductoEntity.setId(id);
-        if (oTipoproductoRepository.existsById(id)) {
-            return new ResponseEntity<TipoproductoEntity>(oTipoproductoRepository.save(oTipoproductoEntity), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<Long>(0L, HttpStatus.NOT_MODIFIED);
         }
     }
 

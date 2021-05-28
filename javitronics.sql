@@ -176,19 +176,7 @@ DROP TABLE IF EXISTS `javitronics`.`pedido_producto` ;
 CREATE TABLE IF NOT EXISTS `javitronics`.`pedido_producto` (
   `id_pedido` BIGINT NOT NULL,
   `id_producto` BIGINT NOT NULL,
-  PRIMARY KEY (`id_pedido`, `id_producto`),
-  INDEX `fk_Pedido_has_Producto_Producto1_idx` (`id_producto` ASC) VISIBLE,
-  INDEX `fk_Pedido_has_Producto_Pedido1_idx` (`id_pedido` ASC) VISIBLE,
-  CONSTRAINT `fk_Pedido_has_Producto_Pedido1`
-    FOREIGN KEY (`id_pedido`)
-    REFERENCES `javitronics`.`pedido` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Pedido_has_Producto_Producto1`
-    FOREIGN KEY (`id_producto`)
-    REFERENCES `javitronics`.`producto` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  
 ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- -----------------------------------------------------
@@ -199,19 +187,7 @@ DROP TABLE IF EXISTS `javitronics`.`pedido_proveedor` ;
 CREATE TABLE IF NOT EXISTS `javitronics`.`pedido_proveedor` (
   `id_pedido` BIGINT NOT NULL,
   `id_proveedor` BIGINT NOT NULL,
-  PRIMARY KEY (`id_pedido`, `id_proveedor`),
-  INDEX `fk_Pedido_has_Proveedor_Proveedor1_idx` (`id_proveedor` ASC) VISIBLE,
-  INDEX `fk_Pedido_has_Proveedor_Pedido1_idx` (`id_pedido` ASC) VISIBLE,
-  CONSTRAINT `fk_Pedido_has_Proveedor_Pedido1`
-    FOREIGN KEY (`id_pedido`)
-    REFERENCES `javitronics`.`pedido` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Pedido_has_Proveedor_Proveedor1`
-    FOREIGN KEY (`id_proveedor`)
-    REFERENCES `javitronics`.`proveedor` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  
 ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 

@@ -24,18 +24,20 @@ import org.springframework.stereotype.Repository;
 public interface CarritoRepository extends JpaRepository<CarritoEntity, Long> {
 
     @Query(value = "SELECT * FROM carrito c WHERE c.id_producto = :id_producto", nativeQuery = true)
-    Page<CarritoEntity> findByCarritoXProducto(Long id_producto, Pageable pageable);
+    Page<CarritoEntity> findByCarritoXProducto(Long id_producto, org.springframework.data.domain.Pageable pageable);
 
-    Page<CarritoEntity> findByProducto(ProductoEntity oProductoEntity, Pageable oPageable);
+    Page<CarritoEntity> findByProducto(ProductoEntity oProductoEntity, org.springframework.data.domain.Pageable oPageable);
+
+    Page<CarritoEntity> findByProductoAndUsuario(ProductoEntity oProductoEntity, UsuarioEntity oUsuarioEntity, org.springframework.data.domain.Pageable oPageable);
 
     @Query(value = "SELECT * FROM carrito c WHERE c.id_usuario = :id_usuario", nativeQuery = true)
-    Page<CarritoEntity> findByCarritoXUsuario(Long id_usuario, Pageable pageable);
+    Page<CarritoEntity> findByCarritoXUsuario(Long id_usuario, org.springframework.data.domain.Pageable pageable);
 
-    Page<CarritoEntity> findByUsuario(UsuarioEntity oUsuarioEntity, Pageable oPageable);
-    
+    Page<CarritoEntity> findByUsuario(UsuarioEntity oUsuarioEntity, org.springframework.data.domain.Pageable oPageable);
+
     List<CarritoEntity> findAllByUsuario(UsuarioEntity oUsuarioEntity);
 
-    Long countByUsuarioAndProducto(UsuarioEntity oUsuarioEntity, ProductoEntity oProductoEntity);    
+    Long countByUsuarioAndProducto(UsuarioEntity oUsuarioEntity, ProductoEntity oProductoEntity);
 
     @Query(value = "SELECT * FROM carrito c WHERE c.id_usuario = :id_usuario and c.id_producto = :id_producto", nativeQuery = true)
     CarritoEntity findByUsuarioAndProducto(Long id_usuario, Long id_producto);
@@ -43,11 +45,6 @@ public interface CarritoRepository extends JpaRepository<CarritoEntity, Long> {
     Long deleteByUsuario(UsuarioEntity oUsuarioEntity);
 
     Long deleteByIdAndUsuario(Long id, UsuarioEntity oUsuarioEntity);
-        
-    CarritoEntity findByIdAndUsuario(Long idCarrito, UsuarioEntity oUsuarioEntity);            
 
-    public Page<CarritoEntity> findByUsuario(UsuarioEntity oUsuarioEntity, org.springframework.data.domain.Pageable oPageable);
-
-    public Page<CarritoEntity> findByProducto(ProductoEntity oProductoEntity, org.springframework.data.domain.Pageable oPageable);
-    
+    CarritoEntity findByIdAndUsuario(Long idCarrito, UsuarioEntity oUsuarioEntity);
 }

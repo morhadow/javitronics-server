@@ -4,7 +4,9 @@
  * and open the template in the editor.
  */
 package com.javitronics.javitronics.entity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,8 +35,9 @@ public class PedidoEntity implements Serializable{
     @Column(name = "id") 
     private Long id;
     private String codigo;
-    private Long cantidad;
-    private Date fecha;
+    private Integer cantidad;
+    @JsonFormat(pattern="dd/MM/yyyy HH:mm")
+    private LocalDateTime fecha;
     
     
     @ManyToMany(mappedBy = "pedido", fetch = FetchType.LAZY)
@@ -69,19 +72,19 @@ public PedidoEntity() {
         this.codigo = codigo;
     }
 
-    public Long getCantidad() {
+    public Integer getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(Long cantidad) {
+    public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
     }
 
-    public Date getFecha() {
+    public LocalDateTime getFecha() {
         return fecha;
     }
 
-    public void setFecha(Date fecha) {
+    public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
     }
 

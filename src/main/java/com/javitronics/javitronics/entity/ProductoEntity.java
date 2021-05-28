@@ -138,6 +138,14 @@ public class ProductoEntity implements Serializable {
     public void setTipoproducto(TipoproductoEntity tipoproducto) {
         this.tipoproducto = tipoproducto;
     }
+
+   public Set<PedidoEntity> getPedido() {
+        return pedido;
+    }
+
+    public void setPedido(Set<PedidoEntity> pedido) {
+        this.pedido = pedido;
+    }
     
     
 }

@@ -8,6 +8,7 @@ import java.time.ZoneId;
 import java.util.Optional;
 import com.javitronics.javitronics.entity.CompraEntity;
 import com.javitronics.javitronics.entity.FacturaEntity;
+import com.javitronics.javitronics.entity.PedidoEntity;
 import com.javitronics.javitronics.entity.ProductoEntity;
 import com.javitronics.javitronics.entity.ProveedorEntity;
 import com.javitronics.javitronics.entity.TipoproductoEntity;
@@ -22,6 +23,7 @@ import com.javitronics.javitronics.repository.ProveedorRepository;
 import com.javitronics.javitronics.repository.TipoproductoRepository;
 import com.javitronics.javitronics.repository.TipoUsuarioRepository;
 import com.javitronics.javitronics.repository.UsuarioRepository;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 /**
@@ -359,7 +361,7 @@ public class FillService {
             //Maybe esta bien
             oUsuarioEntity.setLogin(nombre.substring(0, 2).toLowerCase() + apellido1.substring(0, 2).toLowerCase() + apellido2.substring(0, 2).toLowerCase() + String.valueOf(RandomHelper.getRandomInt(1, 10)));
             oUsuarioEntity.setPassword("da8ab09ab4889c6208116a675cad0b13e335943bd7fc418782d054b32fdfba04");
-            oUsuarioEntity.setEmail(nombre + apellido1.charAt(0) + "@ausiasmarch.net");
+            oUsuarioEntity.setEmail(nombre + apellido1.charAt(0) + "@javitronics.net");
             oUsuarioEntity.setDescuento(0);
             TipoUsuarioEntity oTipousuarioEntity = new TipoUsuarioEntity();
             oTipousuarioEntity.setId(2L);
@@ -414,28 +416,49 @@ public class FillService {
 
     
     public Long pedidoFill(Long cantidad) {
-        
+        for (int i = 1; i <= cantidad; i++) {
+            PedidoEntity oPedidoEntity = new PedidoEntity();
+            oPedidoEntity.setFecha(RandomHelper.getRadomDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+            oPedidoEntity.setCantidad(RandomHelper.getRandomInt(0, 1000));
+            Optional<ProductoEntity> optionalProductoEntity = oProductoRepository.findById(Long.valueOf(RandomHelper.getRandomInt(1, 100)));
+            ProductoEntity oProductoEntity = optionalProductoEntity.get();  
+            oPedidoEntity.setProducto((Set<ProductoEntity>) oProductoEntity);
+            oPedidoRepository.save(oPedidoEntity);
+        }
          return cantidad;
    
     }
     
     public Long proveedorFill(Long cantidad) {
-        String[] nombre = {"Andrea", "David", "Baldomero", "Balduino", "Baldwin", "Baltasar", "Barry", "Bartolo",
+        String[] nombre1 = {"Andrea", "David", "Baldomero", "Balduino", "Baldwin", "Baltasar", "Barry", "Bartolo",
             "Bartolomé", "Baruc", "Baruj", "Candelaria", "Cándida", "Canela", "Caridad", "Carina", "Carisa",
             "Caritina", "Carlota", "Baltazar"};
-        String[] apellidos = {"Gomez", "Guerrero", "Cardenas", "Cardiel", "Cardona", "Cardoso", "Cariaga", "Carillo",
+        String[] apellidos1 = {"Gomez", "Guerrero", "Cardenas", "Cardiel", "Cardona", "Cardoso", "Cariaga", "Carillo",
             "Carion", "Castiyo", "Castorena", "Castro", "Grande", "Grangenal", "Grano", "Grasia", "Griego",
             "Grigalva"};
+        String[] direccion1 = {"Valencia", "Requena", "Utiel", "Cullera", "Oliva", "Alicante"};
         
+       
         for (int i = 1; i <= cantidad; i++) {
+
             ProveedorEntity oProveedorEntity = new ProveedorEntity();
+
+            String nombre = nombre1[(int) (Math.floor(Math.random() * ((nombre1.length - 1) - 0 + 1) + 0))];
+            String apellido1 = apellidos1[(int) (Math.floor(Math.random() * ((apellidos1.length - 1) - 0 + 1) + 0))];
+            String apellido2 = apellidos1[(int) (Math.floor(Math.random() * ((apellidos1.length - 1) - 0 + 1) + 0))];
             oProveedorEntity.setNombre(nombre);
-            oProveedorEntity.setApellidos(apellidos);
-            oProveedorEntity.setEmail(nombre + apellidos.charAt(0) + "@javitronics.net");
-            oProveedorEntity.setTelefono(RandomHelper.getRandomInt(9,9));
-            
+            oProveedorEntity.setApellidos(apellido1);
+            oProveedorEntity.setEmail(nombre + apellido1.charAt(0) + "@javitronics.net");
+            String direccion = direccion1[(int) (Math.floor(Math.random() * ((direccion1.length - 1) - 0 + 1) + 0))];
+            oProveedorEntity.setDireccion(direccion);
+            Optional<PedidoEntity> optionalPedidoEntity = oPedidoRepository.findById(Long.valueOf(RandomHelper.getRandomInt(1, 100)));
+            PedidoEntity oPedidoEntity = optionalPedidoEntity.get();  
+            oProveedorEntity.setPedido((Set<PedidoEntity>) oPedidoEntity);     
             oProveedorRepository.save(oProveedorEntity);
         }
+        
+        
+        
          return cantidad;
    
     }

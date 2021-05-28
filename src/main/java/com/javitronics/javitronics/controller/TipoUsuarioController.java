@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 import com.javitronics.javitronics.entity.TipoUsuarioEntity;
 import com.javitronics.javitronics.repository.TipoUsuarioRepository;
+import com.javitronics.javitronics.service.FillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,26 +27,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/tipousuario")
 public class TipoUsuarioController {
-   @Autowired
-    HttpSession oHttpSession;
 
     @Autowired
-    TipoUsuarioRepository oTipoUsuarioRepository;
+    TipoUsuarioRepository oTipousuarioRepository;
 
-    
+    @Autowired
+    FillService oFillService;
+
     @GetMapping("/{id}")
     public ResponseEntity<?> get(@PathVariable(value = "id") Long id) {
-        if (oTipoUsuarioRepository.existsById(id)) {
-            return new ResponseEntity<TipoUsuarioEntity>(oTipoUsuarioRepository.getOne(id), HttpStatus.OK);
+        if (oTipousuarioRepository.existsById(id)) {
+            return new ResponseEntity<TipoUsuarioEntity>(oTipousuarioRepository.getOne(id), HttpStatus.OK);
         } else {
-            return new ResponseEntity<TipoUsuarioEntity>(oTipoUsuarioRepository.getOne(id), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<TipoUsuarioEntity>(oTipousuarioRepository.getOne(id), HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/all")
     public ResponseEntity<?> all() {
-        if (oTipoUsuarioRepository.count() <= 1000) {
-            return new ResponseEntity<List<TipoUsuarioEntity>>(oTipoUsuarioRepository.findAll(), HttpStatus.OK);
+        if (oTipousuarioRepository.count() <= 1000) {
+            return new ResponseEntity<List<TipoUsuarioEntity>>(oTipousuarioRepository.findAll(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.PAYLOAD_TOO_LARGE);
         }
@@ -53,14 +54,12 @@ public class TipoUsuarioController {
 
     @GetMapping("/count")
     public ResponseEntity<?> count() {
-        return new ResponseEntity<Long>(oTipoUsuarioRepository.count(), HttpStatus.OK);
-    }   
-    
-    
-     @GetMapping("/page")
-    public ResponseEntity<?> getPage(@PageableDefault(page = 0, size = 10, direction = Direction.ASC) Pageable oPageable) {
+        return new ResponseEntity<Long>(oTipousuarioRepository.count(), HttpStatus.OK);
+    }
 
-        Page<TipoUsuarioEntity> oPage = oTipoUsuarioRepository.findAll(oPageable);
+    @GetMapping("/page")
+    public ResponseEntity<?> getPage(@PageableDefault(page = 0, size = 10, direction = Direction.ASC) Pageable oPageable) {
+        Page<TipoUsuarioEntity> oPage = oTipousuarioRepository.findAll(oPageable);
         return new ResponseEntity<Page<TipoUsuarioEntity>>(oPage, HttpStatus.OK);
     }
 }
